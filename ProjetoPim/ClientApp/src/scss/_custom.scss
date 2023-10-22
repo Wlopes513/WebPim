@@ -1,0 +1,145 @@
+html,
+#root {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#root:has(.app) {
+    width: 100% !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: row !important;
+    background-color: #e3e3e3;
+
+    .container {
+        max-width: none;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+
+        .row {
+            margin: 0;
+        }
+    }
+}
+
+header {
+    nav {
+        background: #ffffff;
+    }
+}
+
+a {
+    color: rgba(61, 17, 219, 0.6);
+}
+
+code {
+    color: #E01A76;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #4D65AB;
+    border-color: #4D65AB;
+}
+
+.btn-secondary {
+    font-size: 16px;
+    color: #fff;
+    background-color: #701078;
+    border-color: #701078;
+}
+
+.sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background: rgb(60 75 100 / 95%);
+    color: #fff;
+    margin-left: -250px;
+    transition: all 0.5s;
+
+    a {
+        color: rgba(255, 255, 255, 0.6);
+    }
+}
+
+.sidebar.is-open {
+    margin-left: 0;
+    transition: 0.5s;
+}
+
+.sidebar-header {
+    background: #3c4b64;
+}
+
+.sidebar-header h3 {
+    color: #fff;
+    padding: 1em;
+}
+
+.sidebar ul p {
+    color: #fff;
+    padding: 10px;
+}
+
+.menu-open {
+    background: #3c4b64;
+}
+
+.nav-item:hover {
+    color: #7386d5;
+    background: #fff;
+}
+
+.items-menu {
+    color: #fff;
+    background: #3c4b64;
+}
+
+li a.dropdown-toggle::after {
+    display: inline-flex;
+    position: relative;
+    left: 60%;
+    top: 10%;
+}
+
+.sidebar-header>span {
+    position: relative;
+    float: right;
+    margin: 0.5em;
+    font-size: 2rem;
+    cursor: pointer;
+    display: none;
+}
+
+.side-menu {
+    height: calc(100vh - 130px);
+    overflow-y: scroll;
+}
+
+.side-menu::-webkit-scrollbar {
+    width: 10px;
+}
+
+.side-menu::-webkit-scrollbar-thumb {
+    background: #5466b3;
+    border-radius: 3px;
+}
+
+.side-menu::-webkit-scrollbar-thumb:hover {
+    background: #3a4c99;
+}
+
+footer {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    img {
+        width: 100%;
+    }
+}
