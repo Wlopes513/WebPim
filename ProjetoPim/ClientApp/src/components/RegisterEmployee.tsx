@@ -5,7 +5,6 @@ import { cpf } from 'cpf-cnpj-validator';
 import { cpfMask, moneyMask } from '../utils/mask'
 import ModalConfirm from './ModalConfirm';
 
-
 class RegisterEmployee extends React.PureComponent<any> {
   constructor(context: any, props: any) {
     super(context, props)
@@ -123,7 +122,13 @@ class RegisterEmployee extends React.PureComponent<any> {
                       <FormGroup floating>
                         <Input value={Responsability} required={true} onSelect={(value) => this.setState({ Responsability: value })} placeholder="Cargo" id="Responsability" type='select' >
                           <option value="" selected disabled hidden>Selecione...</option>
-                          <option value="test">Teste</option>
+                          <option value="test">Desenvolvedor</option>
+                          <option value="test">PO</option>
+                          <option value="test">Arquiteto</option>
+                          <option value="test">DBA</option>
+                          <option value="test">Analista</option>
+                          <option value="test">Gerente administrativo</option>
+                          <option value="test">Analista de testes - QA</option>
                         </Input>
                         <Label for="Responsability">Cargo</Label>
                       </FormGroup>

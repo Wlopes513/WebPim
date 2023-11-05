@@ -10,18 +10,14 @@ import { ApplicationState } from '../store';
 import * as WeatherForecastsStore from '../store/Employee';
 import { moneyMask } from '../utils/mask'
 
-type WeatherForecastProps =
-  WeatherForecastsStore.WeatherForecastsState
-  & typeof WeatherForecastsStore.actionCreators
-  & RouteComponentProps<{ startDateIndex: string }>;
-
-class Employee extends React.PureComponent<WeatherForecastProps> {
+class Employee extends React.PureComponent<any> {
   constructor(context: any, props: any) {
     super(context, props)
     this.state = {
       Selected: [],
       IsOpen: 0,
       IsLoading: false,
+      Departament: []
     };
     this.handleDropdown = this.handleDropdown.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
@@ -33,12 +29,17 @@ class Employee extends React.PureComponent<WeatherForecastProps> {
 
   shouldComponentUpdate(nextProps: any, nextState: any): boolean {
     const { deleted } = nextProps;
+    const { departament } = this.props;
     const { IsLoading } = nextState;
 
     if (IsLoading && deleted) {
       this.setState({ IsLoading: false });
       this.ensureDataFetched();
       return false;
+    }
+
+    if (nextProps.departament !== departament && nextProps.departament && nextProps.departament.length) {
+      this.setState({ Departament: nextProps.departament })
     }
 
     return true
@@ -61,6 +62,7 @@ class Employee extends React.PureComponent<WeatherForecastProps> {
   }
 
   private ensureDataFetched() {
+    this.props.requestDepartament();
     this.props.requestWeatherForecasts();
   }
 
@@ -68,7 +70,7 @@ class Employee extends React.PureComponent<WeatherForecastProps> {
   render() {
     const state: any = this.state;
     const props: any = this.props;
-    const { Selected, IsOpen } = state;
+    const { Selected, IsOpen, Departament } = state;
     const { employee } = props;
 
     return (
@@ -152,7 +154,7 @@ class Employee extends React.PureComponent<WeatherForecastProps> {
                             <td>{func.surname}</td>
                             <td>{func.cpf}</td>
                             <td>{func.responsability}</td>
-                            <td>{func.departament}</td>
+                            <td>{Departament && Departament.length && Departament.find((dep: any) => func.departament === dep.id).name}</td>
                             <td>{func && func.salary ? moneyMask(func.salary.toString()) : 0}</td>
                             <td className='text-center'>
                               <Dropdown isOpen={IsOpen === func.id} toggle={(e: any) => this.handleDropdown(e, func.id)} direction="start">
@@ -180,6 +182,6 @@ class Employee extends React.PureComponent<WeatherForecastProps> {
 }
 
 export default connect(
-  (state: ApplicationState) => state.weatherForecasts, // Selects which state properties are merged into the component's props
-  WeatherForecastsStore.actionCreators // Selects which action creators are merged into the component's props
+  (state: ApplicationState) => state.weatherForecasts,
+  WeatherForecastsStore.actionCreators
 )(Employee);
