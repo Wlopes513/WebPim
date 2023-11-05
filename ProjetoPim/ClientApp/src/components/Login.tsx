@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router';
 import { Button, Col, Form, Input, Row } from 'reactstrap';
 import FooterImage from '../assets/footer.svg';
 import { ApplicationState } from '../store';
-import * as WeatherForecastsStore from '../store/WeatherForecasts';
+import * as WeatherForecastsStore from '../store/Employee';
 
 type WeatherForecastProps =
   WeatherForecastsStore.WeatherForecastsState

@@ -1,4 +1,4 @@
-import * as WeatherForecasts from './WeatherForecasts';
+import * as WeatherForecasts from './Employee';
 import * as Counter from './Counter';
 
 // The top-level state object

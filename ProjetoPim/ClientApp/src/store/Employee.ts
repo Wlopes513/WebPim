@@ -1,5 +1,5 @@
 import { Action, Reducer } from 'redux';
-import { AppThunkAction } from './';
+import { AppThunkAction } from '.';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -7,14 +7,7 @@ import { AppThunkAction } from './';
 export interface WeatherForecastsState {
     isLoading: boolean;
     startDateIndex?: number;
-    forecasts: WeatherForecast[];
-}
-
-export interface WeatherForecast {
-    date: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
+    employee: any[];
 }
 
 // -----------------
@@ -23,13 +16,11 @@ export interface WeatherForecast {
 
 interface RequestWeatherForecastsAction {
     type: 'REQUEST_WEATHER_FORECASTS';
-    startDateIndex: number;
 }
 
 interface ReceiveWeatherForecastsAction {
     type: 'RECEIVE_WEATHER_FORECASTS';
-    startDateIndex: number;
-    forecasts: WeatherForecast[];
+    employee: any[];
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
@@ -41,25 +32,22 @@ type KnownAction = RequestWeatherForecastsAction | ReceiveWeatherForecastsAction
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    requestWeatherForecasts: (startDateIndex: number): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    requestWeatherForecasts: (): AppThunkAction<KnownAction> => (dispatch) => {
         // Only load data if it's something we don't already have (and are not already loading)
-        const appState = getState();
-        if (appState && appState.weatherForecasts && startDateIndex !== appState.weatherForecasts.startDateIndex) {
-            fetch(`weatherforecast`)
-                .then(response => response.json() as Promise<WeatherForecast[]>)
+            fetch(`employee`)
+                .then(response => response.json() as any)
                 .then(data => {
-                    dispatch({ type: 'RECEIVE_WEATHER_FORECASTS', startDateIndex: startDateIndex, forecasts: data });
+                    dispatch({ type: 'RECEIVE_WEATHER_FORECASTS', employee: data });
                 });
 
-            dispatch({ type: 'REQUEST_WEATHER_FORECASTS', startDateIndex: startDateIndex });
-        }
+            dispatch({ type: 'REQUEST_WEATHER_FORECASTS' });
     }
 };
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: WeatherForecastsState = { forecasts: [], isLoading: false };
+const unloadedState: WeatherForecastsState = { employee: [], isLoading: false };
 
 export const reducer: Reducer<WeatherForecastsState> = (state: WeatherForecastsState | undefined, incomingAction: Action): WeatherForecastsState => {
     if (state === undefined) {
@@ -70,20 +58,16 @@ export const reducer: Reducer<WeatherForecastsState> = (state: WeatherForecastsS
     switch (action.type) {
         case 'REQUEST_WEATHER_FORECASTS':
             return {
-                startDateIndex: action.startDateIndex,
-                forecasts: state.forecasts,
+                employee: state.employee,
                 isLoading: true
             };
         case 'RECEIVE_WEATHER_FORECASTS':
             // Only accept the incoming data if it matches the most recent request. This ensures we correctly
             // handle out-of-order responses.
-            if (action.startDateIndex === state.startDateIndex) {
                 return {
-                    startDateIndex: action.startDateIndex,
-                    forecasts: action.forecasts,
+                    employee: action.employee,
                     isLoading: false
                 };
-            }
             break;
     }
 

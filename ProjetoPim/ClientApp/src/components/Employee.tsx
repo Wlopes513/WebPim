@@ -1,31 +1,21 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { RouteComponentProps } from 'react-router';
 import { Breadcrumb, BreadcrumbItem, Button, Card, CardBody, CardHeader, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, Row, Table } from 'reactstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons";
+import { ApplicationState } from '../store';
+import * as WeatherForecastsStore from '../store/Employee';
+import { moneyMask } from '../utils/mask'
 
-const values = [{
-  id: 1,
-  name: "Eu",
-  surname: "Talvez",
-  cpf: "123.456.789-50",
-  responsability: "Desenvolvedor",
-  departament: 1,
-  salary: "R$ 1.000,00",
-}, {
-  id: 2,
-  name: "Voce",
-  surname: "Talvez",
-  cpf: "123.456.789-50",
-  responsability: "Desenvolvedor",
-  departament: 1,
-  salary: "R$ 2.000,00",
-}]
+type WeatherForecastProps =
+  WeatherForecastsStore.WeatherForecastsState 
+  & typeof WeatherForecastsStore.actionCreators 
+  & RouteComponentProps<{ startDateIndex: string }>; 
 
-
-class Employee extends React.PureComponent<any> {
+class Employee extends React.PureComponent<WeatherForecastProps> {
   constructor(context: any, props: any) {
     super(context, props)
     this.state = {
@@ -33,6 +23,14 @@ class Employee extends React.PureComponent<any> {
       IsOpen: 0,
     };
     this.handleDropdown = this.handleDropdown.bind(this);
+  }
+
+  public componentDidMount() {
+    this.ensureDataFetched();
+  }
+
+  public componentDidUpdate() {
+    this.ensureDataFetched();
   }
 
   handleDropdown(event: any, id: number) {
@@ -44,9 +42,16 @@ class Employee extends React.PureComponent<any> {
     this.setState({ IsOpen: IsOpen === id ? 0 : id });
   }
 
+  private ensureDataFetched() {
+    this.props.requestWeatherForecasts();
+  }
+
+
   render() {
     const state: any = this.state;
+    const props: any = this.props;
     const { Selected, IsOpen } = state;
+    const { employee } = props;
 
     return (
       <div className="app">
@@ -109,7 +114,7 @@ class Employee extends React.PureComponent<any> {
                         </tr>
                       </thead>
                       <tbody>
-                        {values.map((func) => (
+                        {employee.length && employee.map((func: any) => (
                           <tr>
                             <td>
                               <Input
@@ -130,7 +135,7 @@ class Employee extends React.PureComponent<any> {
                             <td>{func.cpf}</td>
                             <td>{func.responsability}</td>
                             <td>{func.departament}</td>
-                            <td>{func.salary}</td>
+                            <td>{func && func.salary ? moneyMask(`${func.salary.toString()},00`) : 0}</td>
                             <td className='text-center'>
                               <Dropdown isOpen={IsOpen === func.id} toggle={(e: any) => this.handleDropdown(e, func.id)} direction="start">
                                 <DropdownToggle tag="span"><FontAwesomeIcon icon={faEllipsisVertical} color='link' className="me-2" /></DropdownToggle>
@@ -156,4 +161,7 @@ class Employee extends React.PureComponent<any> {
   }
 }
 
-export default connect()(Employee);
+export default connect(
+  (state: ApplicationState) => state.weatherForecasts, // Selects which state properties are merged into the component's props
+  WeatherForecastsStore.actionCreators // Selects which action creators are merged into the component's props
+)(Employee);
