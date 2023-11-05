@@ -91,17 +91,44 @@ namespace ProjetoPim.Controllers
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
-                    String sql = $"DELETE * FROM Funcionario WHERE id = {id}";
+                    String sql = $"DELETE FROM Salario WHERE IDFuncionario = {id}";
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             reader.Read();
+                        }
+                    }
 
-                            return true;
+                    sql = $"DELETE FROM Descontos WHERE IDFuncionario = {id}";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                        }
+                    }
+
+                    sql = $"DELETE FROM HistoricoPagamento WHERE IDFuncionario = {id}";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                        }
+                    }
+
+                    sql = $"DELETE FROM Funcionario WHERE id = {id}";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
                         }
                     }
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -109,7 +136,7 @@ namespace ProjetoPim.Controllers
             }
         }
 
-        [Route("employee/{id}")]
+        [Route("{id}")]
         [HttpDelete]
         public Boolean Delete(int id)
         {

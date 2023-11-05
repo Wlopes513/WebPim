@@ -6,8 +6,12 @@ import { AppThunkAction } from '.';
 
 export interface WeatherForecastsState {
     isLoading: boolean;
-    startDateIndex?: number;
     employee: any[];
+}
+
+export interface DefaultState {
+    isLoading: boolean;
+    data: any;
 }
 
 // -----------------
@@ -23,9 +27,19 @@ interface ReceiveWeatherForecastsAction {
     employee: any[];
 }
 
+interface RequestDeleteEmployeeAction {
+    type: 'REQUEST_DELETE_EMPLOYEE';
+}
+
+interface ReceiveDeleteEmployeeAction {
+    type: 'RECEIVE_DELETE_EMPLOYEE';
+    deleted: any;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction = RequestWeatherForecastsAction | ReceiveWeatherForecastsAction;
+type KnownDeleteEmployeeAction = RequestDeleteEmployeeAction | ReceiveDeleteEmployeeAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -34,13 +48,25 @@ type KnownAction = RequestWeatherForecastsAction | ReceiveWeatherForecastsAction
 export const actionCreators = {
     requestWeatherForecasts: (): AppThunkAction<KnownAction> => (dispatch) => {
         // Only load data if it's something we don't already have (and are not already loading)
-            fetch(`employee`)
-                .then(response => response.json() as any)
-                .then(data => {
-                    dispatch({ type: 'RECEIVE_WEATHER_FORECASTS', employee: data });
-                });
+        fetch(`employee`)
+            .then(response => response.json() as any)
+            .then(data => {
+                dispatch({ type: 'RECEIVE_WEATHER_FORECASTS', employee: data });
+            });
 
-            dispatch({ type: 'REQUEST_WEATHER_FORECASTS' });
+        dispatch({ type: 'REQUEST_WEATHER_FORECASTS' });
+    },
+    requestDeleteEmployee: (id: any): AppThunkAction<KnownDeleteEmployeeAction> => (dispatch) => {
+        // Only load data if it's something we don't already have (and are not already loading)
+        fetch(`employee/${id}`, {method: "delete"})
+            .then(response => response.json() as any)
+            .then(data => {
+                console.log("data");
+                console.log(data);
+                dispatch({ type: 'RECEIVE_DELETE_EMPLOYEE', deleted: data });
+            });
+
+        dispatch({ type: 'REQUEST_DELETE_EMPLOYEE' });
     }
 };
 
@@ -49,12 +75,12 @@ export const actionCreators = {
 
 const unloadedState: WeatherForecastsState = { employee: [], isLoading: false };
 
-export const reducer: Reducer<WeatherForecastsState> = (state: WeatherForecastsState | undefined, incomingAction: Action): WeatherForecastsState => {
+export const reducer: Reducer<WeatherForecastsState> = (state: any, incomingAction: Action): any => {
     if (state === undefined) {
         return unloadedState;
     }
 
-    const action = incomingAction as KnownAction;
+    const action = incomingAction as any;
     switch (action.type) {
         case 'REQUEST_WEATHER_FORECASTS':
             return {
@@ -62,12 +88,20 @@ export const reducer: Reducer<WeatherForecastsState> = (state: WeatherForecastsS
                 isLoading: true
             };
         case 'RECEIVE_WEATHER_FORECASTS':
-            // Only accept the incoming data if it matches the most recent request. This ensures we correctly
-            // handle out-of-order responses.
-                return {
-                    employee: action.employee,
-                    isLoading: false
-                };
+            return {
+                employee: action.employee,
+                isLoading: false
+            };
+        case 'REQUEST_DELETE_EMPLOYEE':
+            return {
+                deleted: state.deleted,
+                isLoading: true
+            };
+        case 'RECEIVE_DELETE_EMPLOYEE':
+            return {
+                deleted: action.deleted,
+                isLoading: false
+            };
             break;
     }
 

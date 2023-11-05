@@ -11,9 +11,9 @@ import * as WeatherForecastsStore from '../store/Employee';
 import { moneyMask } from '../utils/mask'
 
 type WeatherForecastProps =
-  WeatherForecastsStore.WeatherForecastsState 
-  & typeof WeatherForecastsStore.actionCreators 
-  & RouteComponentProps<{ startDateIndex: string }>; 
+  WeatherForecastsStore.WeatherForecastsState
+  & typeof WeatherForecastsStore.actionCreators
+  & RouteComponentProps<{ startDateIndex: string }>;
 
 class Employee extends React.PureComponent<WeatherForecastProps> {
   constructor(context: any, props: any) {
@@ -21,16 +21,34 @@ class Employee extends React.PureComponent<WeatherForecastProps> {
     this.state = {
       Selected: [],
       IsOpen: 0,
+      IsLoading: false,
     };
     this.handleDropdown = this.handleDropdown.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 
   public componentDidMount() {
     this.ensureDataFetched();
   }
 
-  public componentDidUpdate() {
-    this.ensureDataFetched();
+  shouldComponentUpdate(nextProps: any, nextState: any): boolean {
+    const { deleted } = nextProps;
+    const { IsLoading } = nextState;
+
+    if (IsLoading && deleted) {
+      this.setState({ IsLoading: false });
+      this.ensureDataFetched();
+      return false;
+    }
+
+    return true
+  }
+
+  handleDelete(event: any, id: any) {
+    event.preventDefault();
+
+    this.props.requestDeleteEmployee(id);
+    this.setState({ IsLoading: true })
   }
 
   handleDropdown(event: any, id: number) {
@@ -114,7 +132,7 @@ class Employee extends React.PureComponent<WeatherForecastProps> {
                         </tr>
                       </thead>
                       <tbody>
-                        {employee.length && employee.map((func: any) => (
+                        {employee && employee.length && employee.map((func: any) => (
                           <tr>
                             <td>
                               <Input
@@ -135,13 +153,13 @@ class Employee extends React.PureComponent<WeatherForecastProps> {
                             <td>{func.cpf}</td>
                             <td>{func.responsability}</td>
                             <td>{func.departament}</td>
-                            <td>{func && func.salary ? moneyMask(`${func.salary.toString()},00`) : 0}</td>
+                            <td>{func && func.salary ? moneyMask(func.salary.toString()) : 0}</td>
                             <td className='text-center'>
                               <Dropdown isOpen={IsOpen === func.id} toggle={(e: any) => this.handleDropdown(e, func.id)} direction="start">
                                 <DropdownToggle tag="span"><FontAwesomeIcon icon={faEllipsisVertical} color='link' className="me-2" /></DropdownToggle>
                                 <DropdownMenu>
                                   <DropdownItem>Editar</DropdownItem>
-                                  <DropdownItem>Excluir</DropdownItem>
+                                  <DropdownItem onClick={(e) => this.handleDelete(e, func.id)}>Excluir</DropdownItem>
                                   <DropdownItem>Gerar folha</DropdownItem>
                                 </DropdownMenu>
                               </Dropdown>
