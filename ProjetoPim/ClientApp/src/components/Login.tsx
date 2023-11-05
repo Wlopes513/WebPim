@@ -34,7 +34,7 @@ class Login extends React.PureComponent<WeatherForecastProps> {
     if (Email === "admin@admin.com" && Password === "admin") {
         localStorage.setItem("isLogged", "true");
 
-      window.open("/");
+      window.open("/", "_self");
     } else {
       this.setState({ Error: true });
     }

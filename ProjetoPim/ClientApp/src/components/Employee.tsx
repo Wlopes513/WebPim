@@ -9,7 +9,7 @@ const Employee = () => (
       <Col>
         <Card>
           <CardHeader className="p-0">
-            <Breadcrumb listClassName="m-0" listTag="div" className="m-0">
+            <Breadcrumb listClassName="m-0 p-3" listTag="div" className="m-0">
               <BreadcrumbItem
                 href="/"
                 tag="a"
@@ -20,15 +20,15 @@ const Employee = () => (
                 active
                 tag="span"
               >
-                Folha de pagamento
+                Funcionários
               </BreadcrumbItem>
             </Breadcrumb>
           </CardHeader>
           <CardBody>
             <Row>
               <Col className='d-flex justify-content-end'>
-                <Button type='button'>Incluir funcionário</Button>
-                <Button type='button' color="primary" className='ml-3'>Gerar folha de pagamento</Button>
+                <Button type='button' onClick={() => window.open("/funcionarios/incluir-funcionario", "_self")}>Incluir funcionário</Button>
+                <Button type='button' color="primary" className='ms-3'>Gerar folha de pagamento</Button>
               </Col>
             </Row>
             <Table className='mt-5' bordered striped>

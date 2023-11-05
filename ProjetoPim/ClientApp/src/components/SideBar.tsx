@@ -20,13 +20,13 @@ const SideBar = ({ isOpen, toggle }: any) => (
             <Nav vertical className="list-unstyled pb-3">
                 <NavItem>
                     <NavLink tag={Link} to={"/"}>
-                        <FontAwesomeIcon icon={faTachometer} className="mr-2" />
+                        <FontAwesomeIcon icon={faTachometer} className="me-2" />
                         Dashboard
                     </NavLink>
                 </NavItem>
                 <NavItem>
                     <NavLink tag={Link} to={"/funcionarios"}>
-                        <FontAwesomeIcon icon={faUser} className="mr-2" />
+                        <FontAwesomeIcon icon={faUser} className="me-2" />
                         Funcionários
                     </NavLink>
                 </NavItem>
