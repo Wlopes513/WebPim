@@ -5,6 +5,7 @@ import { Button, Col, Form, Input, Row } from 'reactstrap';
 import FooterImage from '../assets/footer.svg';
 import { ApplicationState } from '../store';
 import * as WeatherForecastsStore from '../store/Employee';
+import { localRemove, sessionSet } from '../utils/session';
 
 type WeatherForecastProps =
   WeatherForecastsStore.WeatherForecastsState
@@ -22,17 +23,18 @@ class Login extends React.PureComponent<WeatherForecastProps> {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  componentDidMount() {
+    localRemove("isLogged");
+  }
+
   handleSubmit(event: any) {
     event.preventDefault();
 
     const state: any = this.state;
       const { Email, Password } = state;
 
-      console.log(Email);
-      console.log(Password);
-
     if (Email === "admin@admin.com" && Password === "admin") {
-        localStorage.setItem("isLogged", "true");
+      sessionSet("isLogged", "true", 15);
 
       window.open("/", "_self");
     } else {
