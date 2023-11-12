@@ -59,22 +59,6 @@ const Home = () => (
           </CardBody>
         </Card>
       </Col>
-      <Col>
-        <Card>
-          <CardHeader>Gráfico 2</CardHeader>
-          <CardBody>
-            <Bar options={options} data={data} />
-          </CardBody>
-        </Card>
-      </Col>
-      <Col>
-        <Card>
-          <CardHeader>Gráfico 3</CardHeader>
-          <CardBody>
-            <Bar options={options} data={data} />
-          </CardBody>
-        </Card>
-      </Col>
     </Row>
   </div>
 );

@@ -214,5 +214,64 @@ namespace ProjetoPim.Controllers
         {
             return PostEmployee(employee);
         }
+
+        public IActionResult PostHistoric(EmployeeHistoric employee)
+        {
+            try
+            {
+                String connectionString = "Data Source=\"(localdb)\\Folha de pagamento\";Initial Catalog=PagamentoRH;Integrated Security=True";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    String sql = $"SELECT Max(id) as ID FROM HistoricoPagamento;";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                            lastId = reader.GetInt32(0) + 1;
+                        }
+                    }
+
+                    sql = $"SELECT * FROM HistoricoPagamento WHERE DataPagamento LIKE '%{employee.date}%' AND IDFuncionario = {employee.idEmployee};";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                            if (reader.HasRows)
+                            {
+                                return StatusCode(404);
+                            }
+                        }
+                    }
+
+                    string asdasdasdas = decimal.Parse(employee.salary).ToString().Replace(",", ".");
+
+                    sql = $"INSERT INTO HistoricoPagamento (ID, IDFuncionario, DataPagamento, ValorPago, InformacoesAdicionais) VALUES ({lastId}, {employee.idEmployee}, '{employee.dateRegister}', {asdasdasdas}, '{employee.information}');";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                        }
+                    }
+                }
+
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [Route("historic")]
+        [HttpPost]
+        public IActionResult HttpPostHistoric([FromBody] EmployeeHistoric employee)
+        {
+            return PostHistoric(employee);
+        }
     }
 }

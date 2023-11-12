@@ -24,6 +24,15 @@ namespace ProjetoPim.Model
         public decimal otherDiscount { get; set; }
     }
 
+    public class EmployeeHistoric
+    {
+        public int idEmployee { get; set; }
+        public string date { get; set; }
+        public string dateRegister { get; set; }
+        public string salary { get; set; }
+        public string information { get; set; }
+    }
+
     public class EmployeeRequest
     {
         public string Name { get; set; }
