@@ -17,6 +17,7 @@ namespace ProjetoPim.Controllers
         private readonly ILogger<EmplyeeController> _logger;
 
         public List<EmployeeInfo> listEmployees = new List<EmployeeInfo>();
+        public List<Historic> listHistoric = new List<Historic>();
         public int lastId;
 
         public void GetEmployee()
@@ -272,6 +273,48 @@ namespace ProjetoPim.Controllers
         public IActionResult HttpPostHistoric([FromBody] EmployeeHistoric employee)
         {
             return PostHistoric(employee);
+        }
+
+        public void GetHistoric()
+        {
+            try
+            {
+                String connectionString = "Data Source=\"(localdb)\\Folha de pagamento\";Initial Catalog=PagamentoRH;Integrated Security=True";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    String sql = "SELECT * FROM HistoricoPagamento";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Historic historic = new Historic();
+                                historic.id = reader.GetInt32(0);
+                                historic.date = reader.GetDateTime(2).ToString();
+                                historic.value = reader.GetDecimal(3);
+
+                                listHistoric.Add(historic);
+                            };
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.ToString());
+            }
+        }
+
+        [Route("historic")]
+        [HttpGet]
+        public IEnumerable<Historic> HttpGetHistoric()
+        {
+            GetHistoric();
+
+            return listHistoric;
         }
     }
 }

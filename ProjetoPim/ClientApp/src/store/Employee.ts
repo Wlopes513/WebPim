@@ -70,6 +70,15 @@ export const actionCreators = {
             });
 
         dispatch({ type: 'REQUEST_POST_EMPLOYEE' });
+    },
+    getHistoric: (): AppThunkAction<any> => (dispatch) => {
+        fetch(`employee/historic`)
+            .then(response => response.json() as any)
+            .then(data => {
+                dispatch({ type: 'RECEIVE_HISTORIC', historic: data });
+            });
+
+        dispatch({ type: 'REQUEST_HISTORIC' });
     }
 };
 
@@ -121,6 +130,16 @@ export const reducer: Reducer<WeatherForecastsState> = (state: any, incomingActi
             return {
                 postEmployee: action.postEmployee,
                 postEmployeeIsLoading: false
+            };
+        case 'REQUEST_HISTORIC':
+            return {
+                historic: action.historic,
+                historicIsLoading: true
+            };
+        case 'RECEIVE_HISTORIC':
+            return {
+                historic: action.historic,
+                historicIsLoading: false
             };
             break;
     }

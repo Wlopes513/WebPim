@@ -11,6 +11,8 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import { ApplicationState } from '../store';
+import * as WeatherForecastsStore from '../store/Employee';
 
 ChartJS.register(
   CategoryScale,
@@ -21,46 +23,96 @@ ChartJS.register(
   Legend
 );
 
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top' as const,
-    },
-  },
-};
+class Home extends React.PureComponent<any> {
+  constructor(context: any, props: any) {
+    super(context, props)
+    this.state = {
+    };
+  }
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+  public componentDidMount() {
+    this.ensureDataFetched();
+  }
 
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: labels.map(() => 10),
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-    {
-      label: 'Dataset 2',
-      data: labels.map(() => 10),
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
+  private ensureDataFetched() {
+    this.props.getHistoric();
+  }
 
-const Home = () => (
-  <div className="app app-home">
-    <Row>
-      <Col>
-        <Card>
-          <CardHeader>Gráfico 1</CardHeader>
-          <CardBody>
-            <Bar options={options} data={data} />
-          </CardBody>
-        </Card>
-      </Col>
-    </Row>
-  </div>
-);
+  render() {
+    const { historic } = this.props as any;
+    let dadosAgrupadosPorMes;
+    let data = {
+      labels: [],
+      datasets: []
+    } as any;
+    let options;
 
-export default connect()(Home);
+    console.log('historic');
+    console.log(historic);
+
+    if (historic) {
+      dadosAgrupadosPorMes = historic && historic.reduce((acc: any, item: any) => {
+        const monthYear = item.date.substring(3, 10);
+        if (!acc[monthYear]) {
+          acc[monthYear] = [];
+        }
+        acc[monthYear].push(item);
+        return acc;
+      }, {});
+
+      data = {
+        labels: Object.keys(dadosAgrupadosPorMes),
+        datasets: [
+          {
+            label: 'Valores',
+            backgroundColor: 'rgba(75,192,192,0.4)',
+            borderColor: 'rgba(75,192,192,1)',
+            borderWidth: 1,
+            hoverBackgroundColor: 'rgba(75,192,192,0.6)',
+            hoverBorderColor: 'rgba(75,192,192,1)',
+            data: Object.values(dadosAgrupadosPorMes).map((mes: any) => mes.reduce((sum: any, item: any) => sum + item.value, 0))
+          }
+        ]
+      };
+
+      options = {
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Mês/Ano'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Valor'
+            }
+          }
+        }
+      };
+    }
+
+    return (
+      <div className="app app-home">
+        <Row>
+          <Col>
+            <Card>
+              <CardHeader>Gastos Mensais</CardHeader>
+              <CardBody>
+                {historic && (
+                  <Bar options={options} data={data} />
+                )}
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )
+  }
+}
+
+export default connect(
+  (state: ApplicationState) => state.weatherForecasts,
+  WeatherForecastsStore.actionCreators
+)(Home);

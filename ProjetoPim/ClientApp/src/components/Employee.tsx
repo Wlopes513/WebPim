@@ -99,8 +99,9 @@ class Employee extends React.PureComponent<any> {
             const pdfOptions = { margin: 10, filename: `pagamento${data.name}_${data.surname}-${actualDate.getMonth() + 1}/${actualDate.getFullYear()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
 
             html2pdf(editedHtml, pdfOptions);
+            this.setState({ Blocked: false, IsOpenModal: false })
           } else {
-            this.setState({ Blocked: false })
+            this.setState({ Blocked: false, IsOpenModal: false })
             if (response.status === 404) {
               alert("A folha de pagamento deste mês já foi criada para este usuário!");
             } else {
@@ -143,8 +144,9 @@ class Employee extends React.PureComponent<any> {
               const pdfOptions = { margin: 10, filename: `pagamento${employeer.name}_${employeer.surname}-${actualDate.getMonth() + 1}/${actualDate.getFullYear()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
 
               html2pdf(editedHtml, pdfOptions);
+              this.setState({ Blocked: false, IsOpenModal: false })
             } else {
-              this.setState({ Blocked: false })
+              this.setState({ Blocked: false, IsOpenModal: false })
               if (response.status === 404) {
                 alert("A folha de pagamento deste mês já foi criada para este usuário!");
               } else {

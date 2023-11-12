@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Navbar, NavItem, NavLink } from 'reactstrap';
+import { Button, Navbar, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAlignLeft } from '@fortawesome/free-solid-svg-icons';
+import { localRemove } from '../utils/session';
 
 export default class NavMenu extends React.PureComponent<any, { isOpen: boolean }> {
     public state = {
@@ -27,6 +28,20 @@ export default class NavMenu extends React.PureComponent<any, { isOpen: boolean 
                                 <NavLink tag={Link} className="text-black" to="/">Dashboard</NavLink>
                             </NavItem>
                         </ul>
+                    </div>
+                    <div>
+                        <Button
+                            color='danger'
+                            type='button'
+                            onClick={(e) => {
+                                e.preventDefault();
+
+                                window.sessionStorage.clear();
+                                window.location.reload();
+                            }}
+                        >
+                            Sair
+                        </Button>
                     </div>
                 </Navbar>
             </header>
