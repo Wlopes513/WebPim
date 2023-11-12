@@ -158,7 +158,7 @@ class Employee extends React.PureComponent<any> {
                             <td>{func && func.salary ? moneyMask(func.salary.toString()) : 0}</td>
                             <td className='text-center'>
                               <Dropdown isOpen={IsOpen === func.id} toggle={(e: any) => this.handleDropdown(e, func.id)} direction="start">
-                                <DropdownToggle tag="span"><FontAwesomeIcon icon={faEllipsisVertical} color='link' className="me-2" /></DropdownToggle>
+                                <DropdownToggle tag="span" className='button-dropdown'><FontAwesomeIcon icon={faEllipsisVertical} color='link' className="me-2" /></DropdownToggle>
                                 <DropdownMenu>
                                   <DropdownItem>Editar</DropdownItem>
                                   <DropdownItem onClick={(e) => this.handleDelete(e, func.id)}>Excluir</DropdownItem>

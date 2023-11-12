@@ -17,4 +17,20 @@ namespace ProjetoPim.Model
         public int departament { get; set; }
         public string salary { get; set; }
     }
+
+    public class EmployeeRequest
+    {
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string Address { get; set; }
+        public string Cpf { get; set; }
+        public int Departament { get; set; }
+        public string Responsability { get; set; }
+        public string BaseSalary { get; set; }
+        public string BonusSalary { get; set; }
+        public string BenefitsSalary { get; set; }
+        public string TaxesDiscount { get; set; }
+        public string SecureDiscount { get; set; }
+        public string OtherDiscount { get; set; }
+    }
 }

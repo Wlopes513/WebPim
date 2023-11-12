@@ -43,7 +43,7 @@ export const actionCreators = {
         dispatch({ type: 'REQUEST_WEATHER_FORECASTS' });
     },
     requestDeleteEmployee: (id: any): AppThunkAction<KnownDeleteEmployeeAction> => (dispatch) => {
-        fetch(`employee/${id}`, {method: "delete"})
+        fetch(`employee/${id}`, { method: "delete" })
             .then(response => response.json() as any)
             .then(data => {
                 dispatch({ type: 'RECEIVE_DELETE_EMPLOYEE', deleted: data });
@@ -59,6 +59,17 @@ export const actionCreators = {
             });
 
         dispatch({ type: 'REQUEST_DEPARTAMENT' });
+    },
+    postEmployee: (body: any): AppThunkAction<any> => (dispatch) => {
+        fetch(`employee`, { method: "POST", body: JSON.stringify(body), headers: {
+            "Content-Type": "application/json"
+        }})
+            .then(response => response.json() as any)
+            .then(data => {
+                dispatch({ type: 'RECEIVE_POST_EMPLOYEE', postEmployee: data });
+            });
+
+        dispatch({ type: 'REQUEST_POST_EMPLOYEE' });
     }
 };
 
@@ -100,6 +111,16 @@ export const reducer: Reducer<WeatherForecastsState> = (state: any, incomingActi
             return {
                 departament: action.departament,
                 isLoading: false
+            };
+        case 'REQUEST_POST_EMPLOYEE':
+            return {
+                postEmployee: action.postEmployee,
+                postEmployeeIsLoading: true
+            };
+        case 'RECEIVE_POST_EMPLOYEE':
+            return {
+                postEmployee: action.postEmployee,
+                postEmployeeIsLoading: false
             };
             break;
     }

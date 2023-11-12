@@ -9,11 +9,11 @@ class ModalConfirm extends React.PureComponent<any> {
 
   public render() {
     const props: any = this.props;
-    const { isOpen, toggle, handleSubmit } = props;
+    const { isOpen, toggle, handleSubmit, disabled } = props;
 
     return (
       <Modal isOpen={isOpen} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Tem certeza que deseja incluir funcionário?</ModalHeader>
+        <ModalHeader toggle={toggle} disabled={disabled}>Tem certeza que deseja incluir funcionário?</ModalHeader>
         <ModalBody>
           <p className='m-0'>
             Tem certeza que deseja realizar esta ação?
@@ -23,10 +23,10 @@ class ModalConfirm extends React.PureComponent<any> {
           </p>
         </ModalBody>
         <ModalFooter>
-          <Button color="success" onClick={handleSubmit}>
+          <Button color="success" onClick={handleSubmit} disabled={disabled}>
             Sim, confirmar
           </Button>{' '}
-          <Button color="danger" onClick={toggle}>
+          <Button color="danger" onClick={toggle} disabled={disabled}>
             Não, cancelar
           </Button>
         </ModalFooter>

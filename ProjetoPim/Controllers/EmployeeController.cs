@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ProjetoPim.Controllers
@@ -16,6 +17,7 @@ namespace ProjetoPim.Controllers
         private readonly ILogger<EmplyeeController> _logger;
 
         public List<EmployeeInfo> listEmployees = new List<EmployeeInfo>();
+        public int lastId;
 
         public void GetEmployee()
         {
@@ -50,9 +52,11 @@ namespace ProjetoPim.Controllers
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
-                    foreach (EmployeeInfo employee in listEmployees) {
+                    foreach (EmployeeInfo employee in listEmployees)
+                    {
                         String sql = $"SELECT F.Nome + ' ' + F.Sobrenome AS NomeCompleto, S.SalarioBase + S.Bonus + S.BeneficiosAdicionais - D.Impostos - D.Seguros - D.OutrosDescontos AS SalarioLiquido FROM Funcionario F INNER JOIN Salario S ON F.ID = S.IDFuncionario INNER JOIN Descontos D ON F.ID = D.IDFuncionario WHERE F.ID = {employee.id};";
-                        using (SqlCommand command = new SqlCommand(sql, connection)) {
+                        using (SqlCommand command = new SqlCommand(sql, connection))
+                        {
                             using (SqlDataReader reader = command.ExecuteReader())
                             {
                                 while (reader.Read())
@@ -141,6 +145,67 @@ namespace ProjetoPim.Controllers
         public Boolean Delete(int id)
         {
             return DeleteEmployee(id);
+        }
+
+        public IActionResult PostEmployee(EmployeeRequest employee)
+        {
+            try
+            {
+                String connectionString = "Data Source=\"(localdb)\\Folha de pagamento\";Initial Catalog=PagamentoRH;Integrated Security=True";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    String sql = $"SELECT Max(id) as ID FROM Funcionario;";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                            lastId = reader.GetInt32(0) + 1;
+                        }
+                    }
+
+                    sql = $"INSERT INTO Funcionario (ID, Nome, Sobrenome, Endereco, CPF, Cargo, DepartamentoID) VALUES ({lastId}, '{employee.Name}', '{employee.Surname}', '{employee.Address}', '{employee.Cpf}', '{employee.Responsability}', {employee.Departament});";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                        }
+                    }
+
+                    sql = $"INSERT INTO Salario (IDFuncionario, SalarioBase, Bonus, BeneficiosAdicionais) VALUES ({lastId}, '{employee.BaseSalary}', '{employee.BonusSalary}', '{employee.BenefitsSalary}');";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                        }
+                    }
+
+                    sql = $"INSERT INTO Descontos (IDFuncionario, Impostos, Seguros, OutrosDescontos) VALUES ({lastId}, '{employee.TaxesDiscount}', '{employee.SecureDiscount}', '{employee.OtherDiscount}');";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            reader.Read();
+                        }
+                    }
+                }
+
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                return Ok(false);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Post([FromBody] EmployeeRequest employee)
+        {
+            return PostEmployee(employee);
         }
     }
 }
