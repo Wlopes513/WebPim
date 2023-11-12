@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { RouteComponentProps } from 'react-router';
 import { Breadcrumb, BreadcrumbItem, Button, Card, CardBody, CardHeader, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, Row, Table } from 'reactstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,6 +8,8 @@ import {
 import { ApplicationState } from '../store';
 import * as WeatherForecastsStore from '../store/Employee';
 import { moneyMask } from '../utils/mask'
+import html2pdf from "html2pdf.js";
+import { paymentLeafHtml } from "../utils/paymentLeafHtml";
 
 class Employee extends React.PureComponent<any> {
   constructor(context: any, props: any) {
@@ -21,6 +22,7 @@ class Employee extends React.PureComponent<any> {
     };
     this.handleDropdown = this.handleDropdown.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.handlePaymentLeaf = this.handlePaymentLeaf.bind(this);
   }
 
   public componentDidMount() {
@@ -50,6 +52,54 @@ class Employee extends React.PureComponent<any> {
 
     this.props.requestDeleteEmployee(id);
     this.setState({ IsLoading: true })
+  }
+
+  handlePaymentLeaf(event: any, data?: any) {
+    event.preventDefault();
+
+    const { Selected, Departament } = this.state as any;
+    const { employee } = this.props;
+
+    if (data) {
+      const editedHtml = paymentLeafHtml
+        .replace("{_NOME + _SOBRENOME}", `${data.name} ${data.surname}`)
+        .replace("{_ID}", data.id).replace("{_CPF}", data.cpf)
+        .replace("{_CARGO}", data.responsability)
+        .replace("{_DEPARTAMENTO}", Departament && Departament.length && Departament.find((dep: any) => data.departament === dep.id).name)
+        .replace("{_SALARIO_BASE}", moneyMask(data.baseSalary.toFixed(2).toString()))
+        .replace("{_DESCONTOS}", moneyMask(data.taxesDiscount.toFixed(2).toString()))
+        .replace("{_BONUS}", moneyMask(data.bonusSalary.toFixed(2).toString()))
+        .replace("{_SEGUROS}", moneyMask(data.secureDiscount.toFixed(2).toString()))
+        .replace("{_BENEFICIOS}", moneyMask(data.benefitsSalary.toFixed(2).toString()))
+        .replace("{_OUTROS_DESCONTOS}", moneyMask(data.otherDiscount.toFixed(2).toString()))
+        .replace("{_TOTAL_POSITIVO}", moneyMask((data.baseSalary + data.bonusSalary + data.benefitsSalary).toFixed(2).toString()))
+        .replace("{_TOTAL_NEGATIVO}", moneyMask((data.taxesDiscount + data.secureDiscount + data.otherDiscount).toFixed(2).toString()))
+        .replace("{_SALARIO_TOTAL}", moneyMask(data.salary.toString()));
+      const pdfOptions = { margin: 10, filename: 'documento.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+
+      html2pdf(editedHtml, pdfOptions);
+    } else {
+      Selected.forEach((id: number) => {
+        const employeer = employee.find((emp: any) => emp.id === id);
+        const editedHtml = paymentLeafHtml
+          .replace("{_NOME + _SOBRENOME}", `${employeer.name} ${employeer.surname}`)
+          .replace("{_ID}", employeer.id).replace("{_CPF}", employeer.cpf)
+          .replace("{_CARGO}", employeer.responsability)
+          .replace("{_DEPARTAMENTO}", Departament && Departament.length && Departament.find((dep: any) => employeer.departament === dep.id).name)
+          .replace("{_SALARIO_BASE}", moneyMask(employeer.baseSalary.toFixed(2).toString()))
+          .replace("{_DESCONTOS}", moneyMask(employeer.taxesDiscount.toFixed(2).toString()))
+          .replace("{_BONUS}", moneyMask(employeer.bonusSalary.toFixed(2).toString()))
+          .replace("{_SEGUROS}", moneyMask(employeer.secureDiscount.toFixed(2).toString()))
+          .replace("{_BENEFICIOS}", moneyMask(employeer.benefitsSalary.toFixed(2).toString()))
+          .replace("{_OUTROS_DESCONTOS}", moneyMask(employeer.otherDiscount.toFixed(2).toString()))
+          .replace("{_TOTAL_POSITIVO}", moneyMask((employeer.baseSalary + employeer.bonusSalary + employeer.benefitsSalary).toFixed(2).toString()))
+          .replace("{_TOTAL_NEGATIVO}", moneyMask((employeer.taxesDiscount + employeer.secureDiscount + employeer.otherDiscount).toFixed(2).toString()))
+          .replace("{_SALARIO_TOTAL}", moneyMask(employeer.salary.toString()));
+        const pdfOptions = { margin: 10, filename: 'documento.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+
+        html2pdf(editedHtml, pdfOptions);
+      });
+    }
   }
 
   handleDropdown(event: any, id: number) {
@@ -98,7 +148,7 @@ class Employee extends React.PureComponent<any> {
                 <Row>
                   <Col className='d-flex justify-content-end'>
                     <Button type='button' onClick={() => window.open("/funcionarios/incluir-funcionario", "_self")}>Incluir funcionário</Button>
-                    <Button type='button' color="primary" className='ms-3'>Gerar folha de pagamento</Button>
+                    <Button type='button' color="primary" className='ms-3' disabled={Selected && !Selected.length} onClick={(e) => this.handlePaymentLeaf(e)}>Gerar folha de pagamento</Button>
                   </Col>
                 </Row>
                 <Row>
@@ -162,7 +212,7 @@ class Employee extends React.PureComponent<any> {
                                 <DropdownMenu>
                                   <DropdownItem>Editar</DropdownItem>
                                   <DropdownItem onClick={(e) => this.handleDelete(e, func.id)}>Excluir</DropdownItem>
-                                  <DropdownItem>Gerar folha</DropdownItem>
+                                  <DropdownItem onClick={(e) => this.handlePaymentLeaf(e, func)}>Gerar folha</DropdownItem>
                                 </DropdownMenu>
                               </Dropdown>
                             </td>

@@ -16,6 +16,12 @@ namespace ProjetoPim.Model
         public string responsability { get; set; }
         public int departament { get; set; }
         public string salary { get; set; }
+        public decimal baseSalary { get; set; }
+        public decimal bonusSalary { get; set; }
+        public decimal benefitsSalary { get; set; }
+        public decimal taxesDiscount { get; set; }
+        public decimal secureDiscount { get; set; }
+        public decimal otherDiscount { get; set; }
     }
 
     public class EmployeeRequest

@@ -11,6 +11,7 @@
     "connected-react-router": "6.5.2",
     "cpf-cnpj-validator": "^1.0.3",
     "history": "4.10.1",
+    "html2pdf.js": "^0.10.1",
     "jquery": "~3.6.0",
     "merge": "2.1.1",
     "popper.js": "^1.16.1",

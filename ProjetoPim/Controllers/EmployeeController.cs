@@ -27,6 +27,7 @@ namespace ProjetoPim.Controllers
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
+
                     String sql = "SELECT * FROM Funcionario";
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
@@ -54,7 +55,7 @@ namespace ProjetoPim.Controllers
                     connection.Open();
                     foreach (EmployeeInfo employee in listEmployees)
                     {
-                        String sql = $"SELECT F.Nome + ' ' + F.Sobrenome AS NomeCompleto, S.SalarioBase + S.Bonus + S.BeneficiosAdicionais - D.Impostos - D.Seguros - D.OutrosDescontos AS SalarioLiquido FROM Funcionario F INNER JOIN Salario S ON F.ID = S.IDFuncionario INNER JOIN Descontos D ON F.ID = D.IDFuncionario WHERE F.ID = {employee.id};";
+                        String sql = $"SELECT F.Nome + ' ' + F.Sobrenome AS NomeCompleto, S.SalarioBase AS SalarioBase, S.Bonus AS Bonus, S.BeneficiosAdicionais AS BeneficiosAdicionais, D.Impostos AS Impostos, D.Seguros AS Seguros, D.OutrosDescontos AS OutrosDescontos, S.SalarioBase + S.Bonus + S.BeneficiosAdicionais - D.Impostos - D.Seguros - D.OutrosDescontos AS SalarioLiquido FROM Funcionario F INNER JOIN Salario S ON F.ID = S.IDFuncionario INNER JOIN Descontos D ON F.ID = D.IDFuncionario WHERE F.ID = {employee.id};";
                         using (SqlCommand command = new SqlCommand(sql, connection))
                         {
                             using (SqlDataReader reader = command.ExecuteReader())
@@ -62,6 +63,12 @@ namespace ProjetoPim.Controllers
                                 while (reader.Read())
                                 {
                                     listEmployees.Find(e => e.id == employee.id).salary = reader["SalarioLiquido"].ToString();
+                                    listEmployees.Find(e => e.id == employee.id).baseSalary = decimal.Parse(reader["SalarioBase"].ToString());
+                                    listEmployees.Find(e => e.id == employee.id).bonusSalary = decimal.Parse(reader["Bonus"].ToString());
+                                    listEmployees.Find(e => e.id == employee.id).benefitsSalary = decimal.Parse(reader["BeneficiosAdicionais"].ToString());
+                                    listEmployees.Find(e => e.id == employee.id).taxesDiscount = decimal.Parse(reader["Impostos"].ToString());
+                                    listEmployees.Find(e => e.id == employee.id).secureDiscount = decimal.Parse(reader["Seguros"].ToString());
+                                    listEmployees.Find(e => e.id == employee.id).otherDiscount = decimal.Parse(reader["OutrosDescontos"].ToString());
                                 };
                             }
                         }
